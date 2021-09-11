@@ -141,6 +141,8 @@ github.com/strongo/db v0.0.0-20210910221947-2298e479a9f3 h1:eI9qYdE7PKExii6LdKOU
 github.com/strongo/db v0.0.0-20210910221947-2298e479a9f3/go.mod h1:mJKgSC3FPsiRiWwqmVgc+Q7LoVxkmkBr8jXNJj4/wYE=
 github.com/strongo/db v0.0.0-20210910234955-78769a38d490 h1:tXQ++8NYALBwcb8xUqX2sEi/xvAwIT7Wd9j4AU+Oxdo=
 github.com/strongo/db v0.0.0-20210910234955-78769a38d490/go.mod h1:mJKgSC3FPsiRiWwqmVgc+Q7LoVxkmkBr8jXNJj4/wYE=
+github.com/strongo/db v0.0.0-20210911204848-3cd0c2b7ea0a h1:BLCnl7QPNcXTJUnbgHxq+A8P+O16IHig3fQTseNtB4w=
+github.com/strongo/db v0.0.0-20210911204848-3cd0c2b7ea0a/go.mod h1:mJKgSC3FPsiRiWwqmVgc+Q7LoVxkmkBr8jXNJj4/wYE=
 github.com/strongo/log v0.0.0-20180427205522-8c4c66a45d20 h1:rzmka7ykAIt2QWNIyGVbqob3XtFSFwrw/qOyrHb29Qc=
 github.com/strongo/log v0.0.0-20180427205522-8c4c66a45d20/go.mod h1:wNiymP8KTecS4Jd5FF1evQ2ReBUlKwp1afYWFTHrlpo=
 github.com/strongo/random v0.0.0-20201120164511-f20cfe28165d h1:I8qa7ggQ5RT+hO5gTTaBtS8ZEvbsBIik//AdM4dZL4g=
