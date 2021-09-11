@@ -9,7 +9,7 @@ import (
 	"google.golang.org/appengine/datastore"
 )
 
-// Put saves entity to datastore
+// Put saves record to datastore
 var Put = func(c context.Context, key *datastore.Key, val interface{}) (*datastore.Key, error) {
 	if val == nil {
 		panic("val == nil")

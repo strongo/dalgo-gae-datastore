@@ -31,7 +31,7 @@ func (gaeDatabase) Get(c context.Context, record db.Record) (err error) {
 		return
 	}
 	if isIncomplete {
-		panic("can't get entity by incomplete key")
+		panic("can't get record by incomplete key")
 	}
 	entity := record.Data()
 	if err = Get(c, key, entity); err != nil {
@@ -52,7 +52,7 @@ func (gaeDatabase) Delete(c context.Context, recordKey db.RecordKey) (err error)
 		return
 	}
 	if isIncomplete {
-		panic("can't delete entity by incomplete key")
+		panic("can't delete record by incomplete key")
 	}
 	if err = Delete(c, key); err != nil {
 		return
@@ -71,7 +71,7 @@ func (gaeDatabase) DeleteMulti(c context.Context, recordKeys []db.RecordKey) (er
 			return errors.WithMessage(err, "i="+strconv.Itoa(i))
 		}
 		if isIncomplete {
-			panic("can't delete entity by incomplete key, i=" + strconv.Itoa(i))
+			panic("can't delete record by incomplete key, i=" + strconv.Itoa(i))
 		}
 		keys[i] = key
 	}
@@ -113,7 +113,7 @@ func (gaeDb gaeDatabase) insert(c context.Context, record db.Record) (err error)
 	log.Debugf(c, "InsertWithRandomIntID(kind=%v)", kind)
 	entity := record.Data()
 	if entity == nil {
-		panic("entity == nil")
+		panic("record == nil")
 	}
 
 	wrapErr := func(err error) error {
@@ -161,11 +161,11 @@ func setRecordID(key *datastore.Key, record db.Record) {
 	}
 }
 
-// ErrKeyHasBothIds indicates entity has both string and int ids
-var ErrKeyHasBothIds = errors.New("entity has both string and int ids")
+// ErrKeyHasBothIds indicates record has both string and int ids
+var ErrKeyHasBothIds = errors.New("record has both string and int ids")
 
-// ErrEmptyKind indicates entity holder returned empty kind
-var ErrEmptyKind = errors.New("entity holder returned empty kind")
+// ErrEmptyKind indicates record holder returned empty kind
+var ErrEmptyKind = errors.New("record holder returned empty kind")
 
 func getDatastoreKey(c context.Context, recordKey db.RecordKey) (key *datastore.Key, isIncomplete bool, err error) {
 	if recordKey == nil {

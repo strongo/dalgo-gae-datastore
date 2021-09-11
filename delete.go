@@ -6,7 +6,7 @@ import (
 	"google.golang.org/appengine/datastore"
 )
 
-// Delete entity from DB
+// Delete record from DB
 var Delete = func(c context.Context, key *datastore.Key) error {
 	log.Debugf(c, "gaedb.Delete(%v)", key2str(key))
 	return dbDelete(c, key)

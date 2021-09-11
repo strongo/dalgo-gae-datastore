@@ -6,7 +6,7 @@ import (
 	"google.golang.org/appengine/datastore"
 )
 
-// Get loads entity from DB by key
+// Get loads record from DB by key
 var Get = func(c context.Context, key *datastore.Key, val interface{}) error {
 	if LoggingEnabled {
 		log.Debugf(c, "dbGet(%v)", key2str(key))

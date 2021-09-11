@@ -8,7 +8,7 @@ import (
 
 // SaverWrapper used to serialize struct to properties on saving
 type SaverWrapper struct {
-	entity db.Record
+	record db.Record
 }
 
 var _ datastore.PropertyLoadSaver = (*SaverWrapper)(nil)
