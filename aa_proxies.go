@@ -1,7 +1,7 @@
 package gaedb
 
 import (
-	"github.com/strongo/db/mockdb"
+	"github.com/strongo/dalgo/mockdb"
 	"google.golang.org/appengine/datastore"
 )
 

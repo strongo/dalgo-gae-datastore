@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/pkg/errors"
-	"github.com/strongo/db"
+	"github.com/strongo/dalgo"
 	"github.com/strongo/log"
 	"google.golang.org/appengine/datastore"
 	"strconv"
@@ -13,16 +13,24 @@ import (
 type gaeDatabase struct {
 }
 
-func (gaeDb gaeDatabase) Upsert(c context.Context, record db.Record) error {
+func (gaeDb gaeDatabase) Set(ctx context.Context, record dalgo.Record) error {
+	panic("implement me")
+}
+
+func (gaeDb gaeDatabase) SetMulti(ctx context.Context, records []dalgo.Record) error {
+	panic("implement me")
+}
+
+func (gaeDb gaeDatabase) Upsert(c context.Context, record dalgo.Record) error {
 	panic("implement me")
 }
 
 // NewDatabase create database provider to Google Datastore
-func NewDatabase() db.Database {
+func NewDatabase() dalgo.Database {
 	return gaeDatabase{}
 }
 
-func (gaeDatabase) Get(c context.Context, record db.Record) (err error) {
+func (gaeDatabase) Get(c context.Context, record dalgo.Record) (err error) {
 	if record == nil {
 		panic("record == nil")
 	}
@@ -36,14 +44,14 @@ func (gaeDatabase) Get(c context.Context, record db.Record) (err error) {
 	entity := record.Data()
 	if err = Get(c, key, entity); err != nil {
 		if err == datastore.ErrNoSuchEntity {
-			err = db.NewErrNotFoundByKey(record, err)
+			err = dalgo.NewErrNotFoundByKey(record, err)
 		}
 		return
 	}
 	return
 }
 
-func (gaeDatabase) Delete(c context.Context, recordKey db.RecordKey) (err error) {
+func (gaeDatabase) Delete(c context.Context, recordKey dalgo.RecordKey) (err error) {
 	if recordKey == nil {
 		panic("recordKey == nil")
 	}
@@ -60,7 +68,7 @@ func (gaeDatabase) Delete(c context.Context, recordKey db.RecordKey) (err error)
 	return
 }
 
-func (gaeDatabase) DeleteMulti(c context.Context, recordKeys []db.RecordKey) (err error) {
+func (gaeDatabase) DeleteMulti(c context.Context, recordKeys []dalgo.RecordKey) (err error) {
 	if len(recordKeys) == 0 {
 		return
 	}
@@ -81,35 +89,35 @@ func (gaeDatabase) DeleteMulti(c context.Context, recordKeys []db.RecordKey) (er
 	return
 }
 
-func (gaeDb gaeDatabase) Insert(c context.Context, record db.Record, options db.InsertOptions) (err error) {
+func (gaeDb gaeDatabase) Insert(c context.Context, record dalgo.Record, options dalgo.InsertOptions) (err error) {
 	if record == nil {
 		panic("record == nil")
 	}
 	recordKey := record.Key()
-	kind := db.GetRecordKind(recordKey)
+	kind := dalgo.GetRecordKind(recordKey)
 	log.Debugf(c, "Insert(kind=%v)", kind)
 	data := record.Data()
 	if data == nil {
 		panic("data == nil")
 	}
 	if generateID := options.IDGenerator(); generateID != nil {
-		exists := func(key db.RecordKey) error {
+		exists := func(key dalgo.RecordKey) error {
 			return gaeDb.exists(c, recordKey)
 		}
-		insert := func(record db.Record) error {
+		insert := func(record dalgo.Record) error {
 			return gaeDb.insert(c, record)
 		}
-		return db.InsertWithRandomID(c, record, generateID, 5, exists, insert)
+		return dalgo.InsertWithRandomID(c, record, generateID, 5, exists, insert)
 	}
 	return
 }
 
-func (gaeDb gaeDatabase) insert(c context.Context, record db.Record) (err error) {
+func (gaeDb gaeDatabase) insert(c context.Context, record dalgo.Record) (err error) {
 	if record == nil {
 		panic("record == nil")
 	}
 	recordKey := record.Key()
-	kind := db.GetRecordKind(recordKey)
+	kind := dalgo.GetRecordKind(recordKey)
 	log.Debugf(c, "InsertWithRandomIntID(kind=%v)", kind)
 	entity := record.Data()
 	if entity == nil {
@@ -131,11 +139,11 @@ func (gaeDb gaeDatabase) insert(c context.Context, record db.Record) (err error)
 	return err
 }
 
-func (gaeDb gaeDatabase) exists(c context.Context, recordKey db.RecordKey) error {
-	return gaeDb.Get(c, db.NewRecord(recordKey, db.VoidData()))
+func (gaeDb gaeDatabase) exists(c context.Context, recordKey dalgo.RecordKey) error {
+	return gaeDb.Get(c, dalgo.NewRecord(recordKey, dalgo.VoidData()))
 }
 
-func (gaeDb gaeDatabase) Update(c context.Context, record db.Record) error {
+func (gaeDb gaeDatabase) Update(c context.Context, record dalgo.Record) error {
 	data := record.Data()
 	log.Debugf(c, "data: %+v", data)
 	if data == nil {
@@ -145,14 +153,14 @@ func (gaeDb gaeDatabase) Update(c context.Context, record db.Record) error {
 		return err
 	} else if isIncomplete {
 		log.Errorf(c, "gaeDatabase.Update() called for incomplete key, will insert.")
-		return gaeDb.Insert(c, record, db.NewInsertOptions(db.WithRandomStringID(5)))
+		return gaeDb.Insert(c, record, dalgo.NewInsertOptions(dalgo.WithRandomStringID(5)))
 	} else if _, err = Put(c, key, data); err != nil {
 		return errors.WithMessage(err, "failed to update "+key2str(key))
 	}
 	return nil
 }
 
-func setRecordID(key *datastore.Key, record db.Record) {
+func setRecordID(key *datastore.Key, record dalgo.Record) {
 	recordKey := record.Key()
 	if intID := key.IntID(); intID != 0 {
 		recordKey[0].ID = intID
@@ -167,7 +175,7 @@ var ErrKeyHasBothIds = errors.New("record has both string and int ids")
 // ErrEmptyKind indicates record holder returned empty kind
 var ErrEmptyKind = errors.New("record holder returned empty kind")
 
-func getDatastoreKey(c context.Context, recordKey db.RecordKey) (key *datastore.Key, isIncomplete bool, err error) {
+func getDatastoreKey(c context.Context, recordKey dalgo.RecordKey) (key *datastore.Key, isIncomplete bool, err error) {
 	if recordKey == nil {
 		panic(recordKey == nil)
 	}
@@ -194,10 +202,10 @@ func getDatastoreKey(c context.Context, recordKey db.RecordKey) (key *datastore.
 	return
 }
 
-func (gaeDatabase) UpdateMulti(c context.Context, records []db.Record) (err error) { // TODO: Rename to PutMulti?
+func (gaeDatabase) UpdateMulti(c context.Context, records []dalgo.Record) (err error) { // TODO: Rename to PutMulti?
 
 	keys := make([]*datastore.Key, len(records))
-	vals := make([]db.Validatable, len(records))
+	vals := make([]dalgo.Validatable, len(records))
 
 	insertedIndexes := make([]int, 0, len(records))
 
@@ -229,10 +237,10 @@ func (gaeDatabase) UpdateMulti(c context.Context, records []db.Record) (err erro
 	return
 }
 
-func (gaeDatabase) GetMulti(c context.Context, records []db.Record) error {
+func (gaeDatabase) GetMulti(c context.Context, records []dalgo.Record) error {
 	count := len(records)
 	keys := make([]*datastore.Key, count)
-	vals := make([]db.Validatable, count)
+	vals := make([]dalgo.Validatable, count)
 	for i := range records {
 		record := records[i]
 		recordKey := record.Key()
@@ -262,13 +270,13 @@ var xgTransaction = &datastore.TransactionOptions{XG: true}
 var isInTransactionFlag = "is in transaction"
 var nonTransactionalContextKey = "non transactional context"
 
-func (gaeDatabase) RunInTransaction(c context.Context, f func(c context.Context) error, options db.RunOptions) error {
+func (gaeDatabase) RunInTransaction(ctx context.Context, f func(ctx context.Context, tx dalgo.Transaction) error, options ...dalgo.TransactionOption) error {
+	txOptions := dalgo.NewTransactionOptions(options...)
 	var to *datastore.TransactionOptions
-	if xg, ok := options["XG"]; ok && xg.(bool) == true {
+	if txOptions.IsCrossGroup() {
 		to = xgTransaction
 	}
-	tc := context.WithValue(context.WithValue(c, &isInTransactionFlag, true), &nonTransactionalContextKey, c)
-	return RunInTransaction(tc, f, to)
+	return RunInTransaction(ctx, f, to)
 }
 
 func (gaeDatabase) IsInTransaction(c context.Context) bool {

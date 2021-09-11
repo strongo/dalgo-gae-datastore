@@ -1,10 +1,10 @@
 package gaedb
 
 import (
-	"github.com/strongo/db"
+	"github.com/strongo/dalgo"
 	//"github.com/strongo/log"
 	"context"
-	"github.com/strongo/db/mockdb"
+	"github.com/strongo/dalgo/mockdb"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
 	"os"
@@ -88,7 +88,7 @@ func SetupNdsMock() {
 	}
 
 	PutMulti = func(c context.Context, keys []*datastore.Key, vals interface{}) ([]*datastore.Key, error) {
-		entityHolders := vals.([]db.Record)
+		entityHolders := vals.([]dalgo.Record)
 		var err error
 		var errs []error
 		for i, key := range keys {
@@ -104,10 +104,10 @@ func SetupNdsMock() {
 	}
 }
 
-func onSave(entityHolder db.Record) (db.Record, error) {
+func onSave(entityHolder dalgo.Record) (dalgo.Record, error) {
 	return entityHolder, nil
 }
 
-func onLoad(entityHolder db.Record) (db.Record, error) {
+func onLoad(entityHolder dalgo.Record) (dalgo.Record, error) {
 	return entityHolder, nil
 }

@@ -3,7 +3,7 @@ package gaedb
 import (
 	"context"
 	"github.com/pkg/errors"
-	"github.com/strongo/db"
+	"github.com/strongo/dalgo"
 	"google.golang.org/appengine/datastore"
 	"testing"
 )
@@ -26,52 +26,57 @@ func TestDatabase_RunInTransaction(t *testing.T) {
 
 	var xg bool
 
-	RunInTransaction = func(c context.Context, f func(c context.Context) error, opts *datastore.TransactionOptions) error {
+	RunInTransaction = func(c context.Context, f func(c context.Context, tx dalgo.Transaction) error, opts *datastore.TransactionOptions) error {
 		if opts == nil {
 			if xg {
-				t.Error("Expected XG==true")
+				t.Errorf("Expected XG==%v", xg)
 			}
 		} else if opts.XG != xg {
-			t.Errorf("Expected XG==%v", xg)
+			t.Errorf("Expected XG==%v, got: %v", xg, opts.XG)
 		}
 		j++
-		return f(c)
+		return f(c, nil)
 	}
 
-	xg = true
-	err := dbInstance.RunInTransaction(context.Background(), func(c context.Context) error {
-		i++
-		return nil
-	}, db.CrossGroupTransaction)
+	t.Run("xg=true", func(t *testing.T) {
+		xg = true
+		err := dbInstance.RunInTransaction(context.Background(), func(c context.Context, tx dalgo.Transaction) error {
+			i++
+			return nil
+		}, dalgo.WithCrossGroup())
 
-	if err != nil {
-		t.Errorf("Got unexpected error: %v", err)
-	}
+		if err != nil {
+			t.Errorf("Got unexpected error: %v", err)
+		}
 
-	if i != 1 {
-		t.Errorf("Expected 1 exection, got: %d", i)
-	}
-	if j != 1 {
-		t.Errorf("Expected 1 exection, got: %d", i)
-	}
+		if i != 1 {
+			t.Errorf("Expected 1 exection, got: %d", i)
+		}
+		if j != 1 {
+			t.Errorf("Expected 1 exection, got: %d", i)
+		}
+	})
 
-	i, j = 0, 0
-	xg = false
-	err = dbInstance.RunInTransaction(context.Background(), func(c context.Context) error {
-		i++
-		return errors.New("Test1")
-	}, db.SingleGroupTransaction)
+	t.Run("xg=false", func(t *testing.T) {
+		i, j = 0, 0
+		xg = false
+		err := dbInstance.RunInTransaction(context.Background(), func(c context.Context, tx dalgo.Transaction) error {
+			i++
+			return errors.New("Test1")
+		})
 
-	if err == nil {
-		t.Error("Expected error, got nil")
-	} else if err.Error() != "Test1" {
-		t.Errorf("Got unexpected error: %v", err)
-	}
+		if err == nil {
+			t.Error("Expected error, got nil")
+		} else if err.Error() != "Test1" {
+			t.Errorf("Got unexpected error: %v", err)
+		}
 
-	if i != 1 {
-		t.Errorf("Expected 1 exection, got: %d", i)
-	}
-	if j != 1 {
-		t.Errorf("Expected 1 exection, got: %d", i)
-	}
+		if i != 1 {
+			t.Errorf("Expected 1 exection, got: %d", i)
+		}
+		if j != 1 {
+			t.Errorf("Expected 1 exection, got: %d", i)
+		}
+	})
+
 }

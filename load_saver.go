@@ -3,12 +3,12 @@ package gaedb
 import (
 	"cloud.google.com/go/datastore"
 	"github.com/pkg/errors"
-	"github.com/strongo/db"
+	"github.com/strongo/dalgo"
 )
 
 // SaverWrapper used to serialize struct to properties on saving
 type SaverWrapper struct {
-	record db.Record
+	record dalgo.Record
 }
 
 var _ datastore.PropertyLoadSaver = (*SaverWrapper)(nil)

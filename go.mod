@@ -1,4 +1,4 @@
-module github.com/strongo/db-gae-datastore
+module github.com/strongo/dalgo-gae-datastore
 
 go 1.17
 
@@ -6,7 +6,6 @@ require (
 	cloud.google.com/go/datastore v1.5.0
 	github.com/matryer/is v1.4.0
 	github.com/pkg/errors v0.9.1
-	github.com/strongo/db v0.0.0-20210910234955-78769a38d490
 	github.com/strongo/log v0.0.0-20180427205522-8c4c66a45d20
 	google.golang.org/appengine v1.6.7
 )
@@ -18,6 +17,7 @@ require (
 	github.com/google/go-cmp v0.5.4 // indirect
 	github.com/googleapis/gax-go/v2 v2.0.5 // indirect
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
+	github.com/strongo/dalgo v0.0.0-20210911224247-ae5178f02602 // indirect
 	github.com/strongo/random v0.0.0-20201120164511-f20cfe28165d // indirect
 	go.opencensus.io v0.22.5 // indirect
 	golang.org/x/lint v0.0.0-20201208152925-83fdc39ff7b5 // indirect
