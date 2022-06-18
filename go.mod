@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/datastore v1.6.0
 	github.com/matryer/is v1.4.0
 	github.com/pkg/errors v0.9.1
-	github.com/strongo/dalgo v0.0.0-20210911224247-ae5178f02602
+	github.com/strongo/dalgo v0.0.13
 	github.com/strongo/log v0.0.0-20180427205522-8c4c66a45d20
 	google.golang.org/appengine v1.6.7
 )
